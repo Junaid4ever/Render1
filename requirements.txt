@@ -1,0 +1,4 @@
+flask
+playwright
+indian_names
+nest_asyncio
