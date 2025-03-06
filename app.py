@@ -1,3 +1,16 @@
+import os
+from playwright.sync_api import sync_playwright
+
+# Ensure Playwright is properly set up on Render (this installs browsers)
+def install_playwright_browsers():
+    if not os.path.exists("/tmp/playwright_browsers"):
+        with sync_playwright() as p:
+            p.chromium.download(channel="chrome")  # You can also specify "firefox" or "webkit"
+            os.makedirs("/tmp/playwright_browsers", exist_ok=True)
+
+# Call to install browsers if they aren't already present
+install_playwright_browsers()
+
 import asyncio
 import random
 from flask import Flask, render_template, request, jsonify
