@@ -1,4 +1,4 @@
-flask
-playwright
-indian_names
-nest_asyncio
+Flask==2.0.1
+playwright==1.20.0
+indian_names==0.1.1
+nest_asyncio==1.5.4
