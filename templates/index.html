@@ -4,59 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zoom Meeting Automation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 30px;
+            background-color: #f3f4f6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .zoom-logo {
+            width: 50px;
+            height: auto;
+        }
+
+        .loading {
+            display: none;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <h1>Zoom Meeting Automation</h1>
-    <form id="startForm">
-        <label for="meetingcode">Meeting ID:</label>
-        <input type="text" id="meetingcode" required>
-        <br><br>
-        <label for="passcode">Password:</label>
-        <input type="password" id="passcode" required>
-        <br><br>
-        <label for="wait_time">Wait Time (in seconds):</label>
-        <input type="number" id="wait_time" value="7200">
-        <br><br>
-        <button type="submit">Start Participants</button>
-    </form>
 
-    <br><br>
-    <button id="endBtn">End Meeting</button>
+    <div class="container">
+        <h1><img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Zoom_communications_logo.svg" alt="Zoom Logo" class="zoom-logo"> Zoom Automation</h1>
+
+        <div id="loading" class="loading">
+            <i class="fa fa-spinner fa-spin"></i> Please Wait...
+        </div>
+
+        <form id="meetingForm">
+            <label for="meetingid">Meeting ID</label><br>
+            <input type="text" id="meetingid" placeholder="Enter Meeting ID" required><br>
+
+            <label for="password">Password</label><br>
+            <input type="password" id="password" placeholder="Enter Password" required><br>
+
+            <label for="waittime">Wait Time (in seconds)</label><br>
+            <input type="text" id="waittime" placeholder="Enter Wait Time" required><br><br>
+
+            <button type="submit">Start Participants</button>
+        </form>
+
+        <button onclick="endMeeting()">End Meeting</button>
+    </div>
 
     <script>
-        // Start participants
-        document.getElementById('startForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const meetingcode = document.getElementById('meetingcode').value;
-            const passcode = document.getElementById('passcode').value;
-            const wait_time = document.getElementById('wait_time').value;
+        const meetingForm = document.getElementById("meetingForm");
 
-            fetch('/start', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    meetingcode: meetingcode,
-                    passcode: passcode,
-                    wait_time: wait_time
-                })
-            })
-            .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => alert(error.message));
+        meetingForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            document.getElementById("loading").style.display = "block";
+
+            const meetingId = document.getElementById("meetingid").value;
+            const password = document.getElementById("password").value;
+            const waitTime = document.getElementById("waittime").value;
+
+            const response = await fetch(`/start?meetingid=${meetingId}&password=${password}&waittime=${waitTime}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                alert("Participants started successfully!");
+            } else {
+                alert("Error starting participants.");
+            }
+
+            document.getElementById("loading").style.display = "none";
         });
 
-        // End meeting
-        document.getElementById('endBtn').addEventListener('click', function() {
-            fetch('/end', {
-                method: 'POST',
-            })
-            .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => alert(error.message));
-        });
+        function endMeeting() {
+            fetch('/end', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                });
+        }
     </script>
+
 </body>
 </html>
