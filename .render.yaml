@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: my-flask-app
+    env: docker
+    buildCommand: ""  # We already define everything in Dockerfile, so no need for a build command
+    startCommand: "python app.py"  # Command to run after the container starts
+    dockerfilePath: ./Dockerfile  # Path to the Dockerfile
